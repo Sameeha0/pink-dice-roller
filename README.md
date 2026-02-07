@@ -2,7 +2,7 @@
 
 This project is a modern, aesthetically pleasing Pink Dice Roller built with a focus on mobile responsiveness and smooth user experience. It leverages the speed of Vite, the utility of Tailwind CSS, and the scalability of Firebase.
 
-You can try the live app here: Pink Dice Roller
+You can try the live app here: [Pink Dice Roller](https://pink-dice-roller-k5dq.vercel.app/) 
 
 ## Features
 - **Serverless Online Play**: Uses Peer-to-Peer (WebRTC) technology. No servers, no API keys, no login. Just share the code!
