@@ -1,0 +1,69 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --barbie-gradient: linear-gradient(135deg, #ff1493 0%, #ffc0cb 50%, #ff8fa3 100%);
+}
+
+@layer base {
+  html, body, #root {
+    height: 100%;
+  }
+  body {
+    @apply bg-barbieWhite dark:bg-barbieBlack text-deepPink dark:text-deepPink font-sans;
+  }
+}
+
+@layer components {
+  .barbie-card {
+    @apply rounded-xl shadow-barbie bg-barbieWhite/90 dark:bg-barbieBlack/60 backdrop-blur;
+  }
+  .barbie-button {
+    @apply rounded-xl px-4 py-2 font-semibold text-white bg-hotPink hover:bg-deepPink transition-transform duration-200 hover:scale-[1.02] active:scale-[0.98];
+    background-image: var(--barbie-gradient);
+  }
+  .tab-button {
+    @apply rounded-xl px-4 py-2 font-semibold bg-babyPink/60 dark:bg-barbieBlack/50 hover:bg-babyPink dark:hover:bg-barbieBlack/60 text-deepPink dark:text-deepPink transition duration-200 ring-1 ring-hotPink/30 dark:ring-neonPink/40 ring-offset-2 ring-offset-babyPink/60 dark:ring-offset-barbieBlack/60 shadow-md;
+  }
+  .dice {
+    @apply w-16 h-16 text-white rounded-2xl flex items-center justify-center shadow-barbie ring-2 ring-white/50;
+    background-image: var(--barbie-gradient);
+    position: relative;
+    box-shadow:
+      0 12px 24px rgba(255, 20, 147, 0.25),
+      0 8px 12px rgba(0, 0, 0, 0.2),
+      inset 0 -6px 12px rgba(0, 0, 0, 0.15);
+  }
+  .dice::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 40%;
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.6), rgba(255,255,255,0));
+    pointer-events: none;
+  }
+  .dice-dot {
+    @apply w-2 h-2 bg-white rounded-full;
+  }
+}
+
+/* Dark mode dice styling */
+.dark .dice {
+  background-image: linear-gradient(135deg, #c2185b 0%, #ff2e97 60%, #ff8fa3 100%);
+  color: #ffffff;
+  box-shadow:
+    0 12px 24px rgba(194, 24, 91, 0.35),
+    0 8px 12px rgba(0, 0, 0, 0.4),
+    inset 0 -6px 12px rgba(0, 0, 0, 0.25);
+}
+.dark .dice::before {
+  background: linear-gradient(to bottom, rgba(255,255,255,0.35), rgba(255,255,255,0));
+}
+.dark .dice-dot {
+  background: #000000;
+}
