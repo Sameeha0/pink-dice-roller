@@ -104,8 +104,8 @@ export default function Players({ externalPlayers, currentPlayerId, partyCode, o
                 className="btn-secondary shrink-0"
                 disabled={busy || !joinInput.trim()}
                 onClick={() => {
+                  // Joining keeps the party's history (resetting here would clear it for everyone)
                   onSetParty && onSetParty(joinInput.trim())
-                  onResetGame && onResetGame()
                 }}
               >
                 Join

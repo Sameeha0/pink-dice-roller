@@ -34,6 +34,7 @@ export default function Dice({
   totalPlayers,
   winnerId,
   winnerName,
+  isTie,
   onSetRounds,
   onResetGame,
   onRolled,
@@ -45,20 +46,29 @@ export default function Dice({
   const [rolling, setRolling] = useState(false)
   const audioRef = useRef(null)
 
-  function initAudio() {
-    if (!audioRef.current) {
-      const base = (import.meta.env && import.meta.env.BASE_URL) || '/'
-      const src = (base.endsWith('/') ? base : base + '/') + 'sounds/roll-click.mp3'
-      const a = new Audio(src)
-      a.preload = 'none'
-      audioRef.current = a
-    }
-  }
-
+  // Dice rattle made with the Web Audio API: a few short clicks, no sound file needed
+  // (the old version loaded sounds/roll-click.mp3, which was never in the project)
   function playAudio() {
-    initAudio()
-    audioRef.current?.currentTime && (audioRef.current.currentTime = 0)
-    audioRef.current?.play().catch(() => {})
+    try {
+      const Ctx = window.AudioContext || window.webkitAudioContext
+      if (!Ctx) return
+      if (!audioRef.current) audioRef.current = new Ctx()
+      const ctx = audioRef.current
+      if (ctx.state === 'suspended') ctx.resume()
+
+      for (let i = 0; i < 5; i++) {
+        const start = ctx.currentTime + i * 0.07 + Math.random() * 0.02
+        const osc = ctx.createOscillator()
+        const gain = ctx.createGain()
+        osc.type = 'triangle'
+        osc.frequency.value = 900 + Math.random() * 700
+        gain.gain.setValueAtTime(0.12, start)
+        gain.gain.exponentialRampToValueAtTime(0.001, start + 0.05)
+        osc.connect(gain).connect(ctx.destination)
+        osc.start(start)
+        osc.stop(start + 0.06)
+      }
+    } catch {}
   }
 
   function fireConfetti(sum, diceCount) {
@@ -179,12 +189,14 @@ export default function Dice({
         {winnerId ? (
           <div className="dialog-backdrop fixed inset-0 flex items-center justify-center bg-ink/40 dark:bg-black/60 backdrop-blur-sm z-50 p-4">
             <div className="dialog-panel card p-8 text-center w-full max-w-sm" role="dialog" aria-modal="true" aria-labelledby="winner-title">
-              <div className="text-5xl mb-3" aria-hidden="true">👑</div>
-              <p className="label">Winner</p>
+              <div className="text-5xl mb-3" aria-hidden="true">{isTie ? '🤝' : '👑'}</div>
+              <p className="label">{isTie ? "It's a tie" : 'Winner'}</p>
               <h2 id="winner-title" className="text-3xl font-extrabold text-hotPink dark:text-neonPink mt-1">
                 {winnerName || '—'}
               </h2>
-              <p className="section-desc mt-2 mb-6">Congratulations! That was a great game.</p>
+              <p className="section-desc mt-2 mb-6">
+                {isTie ? 'Same top score. Play again to break the tie!' : 'Congratulations! That was a great game.'}
+              </p>
               <button className="btn-primary btn-lg w-full" onClick={onResetGame}>Play again</button>
             </div>
           </div>
