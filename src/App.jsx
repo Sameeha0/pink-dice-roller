@@ -115,15 +115,15 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-full bg-gradient-to-b from-babyPink/40 to-blush/20 dark:from-barbieBlack dark:to-barbieBlack">
-      <div className="max-w-3xl mx-auto p-4">
+    <div className="min-h-full bg-[radial-gradient(900px_420px_at_50%_-120px,rgba(255,20,147,0.16),transparent_70%)] dark:bg-[radial-gradient(900px_420px_at_50%_-120px,rgba(255,46,151,0.18),transparent_70%)]">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 pt-6 sm:pt-10">
         <Navbar 
           tab={tab} 
           setTab={setTab} 
           onOpenAbout={() => setAboutOpen(true)} 
           partyCode={partyCode} 
         />
-        <main className="mt-6">
+        <main className="mt-6 sm:mt-8">
           {tab === 'players' && (
             <Players
               externalPlayers={players}

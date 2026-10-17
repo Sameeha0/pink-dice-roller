@@ -1,99 +1,125 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+
+const steps = [
+  {
+    icon: '👥',
+    title: 'Players',
+    text: 'Start here. Add your name and an emoji.',
+    points: [
+      ['Online', 'Press Generate to get a code and share it with friends.'],
+      ['Join', 'Friends enter your code and press Join.'],
+      ['Local', 'Just add players to play on one device.']
+    ]
+  },
+  {
+    icon: '🎲',
+    title: 'Dice',
+    text: 'The main game. Wait for your turn, then roll.',
+    points: [
+      ['Roll', 'Press Roll dice when it is your turn.'],
+      ['Sync', 'Scores and turns update for everyone automatically.']
+    ]
+  },
+  {
+    icon: '📜',
+    title: 'History',
+    text: 'See past rolls or fix mistakes.',
+    points: [['Clear', 'Remove just your own rolls if you need to.']]
+  }
+]
+
+const features = [
+  'Turn-based rounds with auto-advance and a winner popup',
+  'Glossy dice with animation, sound and confetti',
+  'Light and dark themes in Barbie pink',
+  'Players with emoji, unlimited per device',
+  'Party codes to play together on several devices',
+  'Only your device can roll for the players it added',
+  'History with clear-all, clear-mine and clear-device options',
+  'Serverless peer-to-peer sync (WebRTC via Trystero)'
+]
 
 export default function AboutModal({ onClose }) {
   const [page, setPage] = useState(0)
 
+  // Close with the Escape key
+  useEffect(() => {
+    const onKey = (e) => { if (e.key === 'Escape') onClose() }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [onClose])
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 dark:bg-black/60 p-4">
-      <div className="rounded-2xl p-6 w-full max-w-xl bg-barbieWhite dark:bg-barbieBlack shadow-barbie relative flex flex-col max-h-[90vh] overflow-y-auto">
-        
+    <div
+      className="dialog-backdrop fixed inset-0 z-50 flex items-center justify-center bg-ink/40 dark:bg-black/60 backdrop-blur-sm p-4"
+      onClick={onClose}
+    >
+      <div
+        className="dialog-panel card w-full max-w-xl max-h-[90vh] flex flex-col"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="about-title"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Header */}
-        <div className="flex items-center justify-between mb-4 shrink-0">
-          <h2 className="text-2xl font-extrabold text-hotPink dark:text-neonPink">
-            {page === 0 ? 'How to Play 🎀' : 'About ✨'}
-          </h2>
-          <button className="tab-button" onClick={onClose}>Close</button>
-        </div>
-
-        {/* Content Area */}
-        <div className="flex-1 overflow-y-auto min-h-[200px]">
-          {page === 0 ? (
-            <div className="space-y-4 text-sm sm:text-base">
-              <p className="font-semibold text-lg text-hotPink dark:text-neonPink">Welcome! Follow these steps:</p>
-              
-              <div className="bg-babyPink/30 dark:bg-barbieBlack/40 p-3 rounded-xl">
-                <h3 className="font-bold mb-1">1. Players Tab 👥</h3>
-                <p>Start here! Enter your name and an emoji.</p>
-                <ul className="list-disc ml-5 mt-1 opacity-80 text-xs sm:text-sm">
-                  <li><strong>Online:</strong> Click <span className="font-mono bg-white/50 px-1 rounded">Generate</span> to get a code. Share it with friends!</li>
-                  <li><strong>Join:</strong> Friends click <span className="font-mono bg-white/50 px-1 rounded">Join</span> and enter your code.</li>
-                  <li><strong>Local:</strong> Just add players to play on one device.</li>
-                </ul>
-              </div>
-
-              <div className="bg-babyPink/30 dark:bg-barbieBlack/40 p-3 rounded-xl">
-                <h3 className="font-bold mb-1">2. Dice Tab 🎲</h3>
-                <p>The main game zone. Wait for your turn (highlighted).</p>
-                <ul className="list-disc ml-5 mt-1 opacity-80 text-xs sm:text-sm">
-                  <li><strong>Roll:</strong> Click the button when it's your turn.</li>
-                  <li><strong>Sync:</strong> Scores & turns update automatically for everyone.</li>
-                </ul>
-              </div>
-
-              <div className="bg-babyPink/30 dark:bg-barbieBlack/40 p-3 rounded-xl">
-                <h3 className="font-bold mb-1">3. History Tab 📜</h3>
-                <p>Check past rolls or fix mistakes.</p>
-                <ul className="list-disc ml-5 mt-1 opacity-80 text-xs sm:text-sm">
-                  <li><strong>Clear:</strong> You can remove just your own rolls if needed.</li>
-                </ul>
-              </div>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              <p className="font-semibold">Features & Credits</p>
-              <ul className="list-disc ml-5 space-y-2 text-sm sm:text-base opacity-90">
-                <li>Turn-based rounds with auto-advance and winner popup</li>
-                <li>Glossy dice with animation, sound, confetti</li>
-                <li>Light/Dark themes with deep pink styling</li>
-                <li>Players with emoji, unlimited per device</li>
-                <li>Party code: Generate → CODE → Join → Enter code</li>
-                <li>Per-device roll authorization (your device’s players can roll)</li>
-                <li>History: Clear All, Clear My Rolls (name+emoji), Clear Device Rolls</li>
-                <li>Active party code badge in header</li>
-                <li>Responsive UI for small screens</li>
-                <li>Serverless P2P sync (WebRTC via Trystero)</li>
-              </ul>
-              <div className="pt-4 text-center font-bold text-hotPink dark:text-neonPink">
-                Made by Sameeha 🎀
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Navigation Footer */}
-        <div className="flex items-center justify-between mt-6 pt-4 border-t border-babyPink/50 dark:border-hotPink/30 shrink-0">
-          <div className="flex gap-2">
-            <span className={`h-2 w-2 rounded-full ${page === 0 ? 'bg-hotPink' : 'bg-gray-300 dark:bg-gray-600'}`} />
-            <span className={`h-2 w-2 rounded-full ${page === 1 ? 'bg-hotPink' : 'bg-gray-300 dark:bg-gray-600'}`} />
+        <div className="flex items-center justify-between gap-3 px-6 pt-6 pb-4">
+          <div>
+            <p className="label">{page === 0 ? 'Guide' : 'About'}</p>
+            <h2 id="about-title" className="text-2xl font-extrabold text-hotPink dark:text-neonPink">
+              {page === 0 ? 'How to play' : 'Features'}
+            </h2>
           </div>
-          
+          <button className="btn-ghost !px-3" onClick={onClose} aria-label="Close">✕</button>
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 overflow-y-auto px-6">
           {page === 0 ? (
-            <button 
-              className="barbie-button flex items-center gap-2 px-6"
-              onClick={() => setPage(1)}
-            >
-              Next <span className="text-xl">➜</span>
-            </button>
+            <ol className="flex flex-col gap-3">
+              {steps.map((s, i) => (
+                <li key={s.title} className="panel p-4 flex gap-4">
+                  <span className="h-10 w-10 shrink-0 rounded-xl grid place-items-center text-lg bg-white dark:bg-nightLine">
+                    {s.icon}
+                  </span>
+                  <div className="min-w-0">
+                    <h3 className="font-extrabold">{i + 1}. {s.title}</h3>
+                    <p className="text-sm text-inkSoft dark:text-rose/70">{s.text}</p>
+                    <ul className="mt-2 flex flex-col gap-1 text-sm">
+                      {s.points.map(([k, v]) => (
+                        <li key={k}><span className="font-bold">{k}:</span> <span className="text-inkSoft dark:text-rose/70">{v}</span></li>
+                      ))}
+                    </ul>
+                  </div>
+                </li>
+              ))}
+            </ol>
           ) : (
-            <button 
-              className="tab-button flex items-center gap-2 px-6"
-              onClick={() => setPage(0)}
-            >
-              <span className="text-xl">⬅</span> Back
-            </button>
+            <div>
+              <ul className="flex flex-col gap-2">
+                {features.map((f) => (
+                  <li key={f} className="flex gap-3 text-sm">
+                    <span className="text-hotPink dark:text-neonPink font-extrabold" aria-hidden="true">✓</span>
+                    <span>{f}</span>
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-6 text-center font-bold text-hotPink dark:text-neonPink">Made by Sameeha 🎀</p>
+            </div>
           )}
         </div>
 
+        {/* Footer */}
+        <div className="flex items-center justify-between gap-3 px-6 py-5 mt-4 border-t border-babyPink/60 dark:border-nightLine">
+          <div className="flex gap-2" aria-hidden="true">
+            <span className={`h-2 rounded-full transition-[width,background-color] duration-200 ${page === 0 ? 'w-6 bg-hotPink' : 'w-2 bg-babyPink dark:bg-nightLine'}`} />
+            <span className={`h-2 rounded-full transition-[width,background-color] duration-200 ${page === 1 ? 'w-6 bg-hotPink' : 'w-2 bg-babyPink dark:bg-nightLine'}`} />
+          </div>
+          {page === 0 ? (
+            <button className="btn-primary" onClick={() => setPage(1)}>Next →</button>
+          ) : (
+            <button className="btn-secondary" onClick={() => setPage(0)}>← Back</button>
+          )}
+        </div>
       </div>
     </div>
   )

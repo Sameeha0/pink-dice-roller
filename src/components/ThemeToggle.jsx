@@ -21,12 +21,14 @@ export default function ThemeToggle() {
 
   return (
     <button
-      className="barbie-button"
+      className="btn-secondary !px-3"
       type="button"
       aria-label="Toggle theme"
+      title={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
       onClick={toggle}
     >
-      {theme === 'light' ? '🌙 Dark' : '☀️ Light'}
+      <span aria-hidden="true">{theme === 'light' ? '🌙' : '☀️'}</span>
+      <span className="hidden sm:inline">{theme === 'light' ? 'Dark' : 'Light'}</span>
     </button>
   )
 }

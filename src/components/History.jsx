@@ -20,11 +20,14 @@ export default function History({ onCleared }) {
   }, [])
 
   return (
-    <div className="barbie-card p-4">
-      <div className="flex items-center justify-between mb-3">
-        <h2 className="text-lg font-semibold">History</h2>
+    <section className="card p-5 sm:p-6">
+      <div className="flex flex-wrap items-start justify-between gap-3 mb-5">
+        <div>
+          <h2 className="section-title">History</h2>
+          <p className="section-desc">Every roll in this party, newest first.</p>
+        </div>
         <button
-          className="tab-button"
+          className="btn-danger"
           onClick={async () => {
             setClearing(true)
             await clearRolls()
@@ -34,28 +37,67 @@ export default function History({ onCleared }) {
           }}
           disabled={clearing || !rolls.length}
         >
-          {clearing ? 'Clearing…' : 'Clear History'}
+          {clearing ? 'Clearing…' : 'Clear history'}
         </button>
       </div>
-      <div className="barbie-card p-3 mb-3">
-        <div className="text-sm font-semibold mb-2">Clear by device or your name</div>
-        <div className="flex flex-wrap items-center gap-2">
+
+      {!rolls.length ? (
+        <div className="panel text-center py-10 px-4">
+          <div className="text-4xl mb-2" aria-hidden="true">🎲</div>
+          <p className="font-bold">No rolls yet</p>
+          <p className="section-desc">Rolls will appear here as soon as someone plays.</p>
+        </div>
+      ) : (
+        <ul className="flex flex-col gap-2">
+          {rolls.map((r) => (
+            <li
+              key={r.id || r.createdAt}
+              className="flex items-center gap-3 p-3 rounded-2xl bg-rose/50 dark:bg-night/50"
+            >
+              <span className="h-11 w-11 shrink-0 rounded-full grid place-items-center text-lg font-extrabold tabular-nums text-white"
+                style={{ backgroundImage: 'var(--barbie-gradient)' }}>
+                {r.total}
+              </span>
+              <div className="min-w-0 flex-1">
+                <div className="font-extrabold truncate">{r.playerName}</div>
+                <div className="text-xs text-inkSoft dark:text-rose/60">{formatTime(r.createdAt)}</div>
+              </div>
+              <div className="flex gap-1 shrink-0" aria-label={`Dice values ${r.diceValues?.join(', ')}`}>
+                {(r.diceValues || []).map((v, i) => (
+                  <span key={i} className="h-7 w-7 rounded-lg grid place-items-center text-xs font-extrabold bg-white dark:bg-nightLine border border-babyPink dark:border-nightLine">
+                    {v}
+                  </span>
+                ))}
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      <details className="mt-5 group">
+        <summary className="cursor-pointer list-none text-sm font-bold text-inkSoft dark:text-rose/60 hover:text-deepPink dark:hover:text-rose select-none">
+          <span className="inline-block transition-transform duration-150 group-open:rotate-90 mr-1">›</span>
+          Remove only your rolls
+        </summary>
+        <div className="flex flex-wrap items-center gap-2 mt-3">
           <input
             type="text"
             value={myName}
             onChange={(e) => setMyName(e.target.value)}
             placeholder="Your name"
-            className="w-40 rounded-xl px-3 py-2 bg-babyPink/60 dark:bg-barbieBlack/40 focus:outline-none"
+            aria-label="Your name"
+            className="field !w-40"
           />
           <input
             type="text"
             value={myEmoji}
             onChange={(e) => setMyEmoji(e.target.value)}
-            placeholder="Your emoji (optional)"
-            className="w-40 rounded-xl px-3 py-2 bg-babyPink/60 dark:bg-barbieBlack/40 focus:outline-none"
+            placeholder="Emoji (optional)"
+            aria-label="Your emoji"
+            className="field !w-40"
           />
           <button
-            className="tab-button"
+            className="btn-secondary"
             onClick={async () => {
               if (!myName.trim()) {
                 alert('Enter your name to clear')
@@ -72,10 +114,10 @@ export default function History({ onCleared }) {
             }}
             disabled={clearing}
           >
-            Clear My Rolls
+            Clear my rolls
           </button>
           <button
-            className="tab-button"
+            className="btn-ghost"
             onClick={async () => {
               setClearing(true)
               await clearDeviceRolls()
@@ -86,36 +128,10 @@ export default function History({ onCleared }) {
             }}
             disabled={clearing}
           >
-            Clear Device Rolls
+            Clear this device&apos;s rolls
           </button>
         </div>
-      </div>
-      {!rolls.length ? (
-        <div className="text-center py-6">
-          <p className="text-sm opacity-80">No rolls yet 💕 Let’s roll!</p>
-        </div>
-      ) : (
-        <ul className="space-y-2">
-          {rolls.map((r) => (
-            <li
-              key={r.id || r.createdAt}
-              className="flex items-center justify-between p-3 rounded-xl bg-babyPink/50 dark:bg-barbieBlack/30"
-            >
-              <div className="flex items-center gap-3">
-                <span className="text-lg">🎀</span>
-                <div>
-                  <div className="font-semibold">
-                    {r.playerName} · {r.diceCount} dice · Total {r.total}
-                  </div>
-                  <div className="text-xs opacity-80">
-                    Values: {r.diceValues?.join(', ')} · {formatTime(r.createdAt)}
-                  </div>
-                </div>
-              </div>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
+      </details>
+    </section>
   )
 }

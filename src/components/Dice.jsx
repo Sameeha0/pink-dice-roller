@@ -14,8 +14,8 @@ function DiceFace({ value, animate }) {
   }
   const grid = grids[value] || grids[1]
   return (
-    <div className={`dice ${animate ? 'animate-roll' : ''}`}>
-      <div className="grid grid-cols-3 grid-rows-3 gap-2">
+    <div className={`dice ${animate ? 'animate-roll' : ''}`} role="img" aria-label={`Die showing ${value}`}>
+      <div className="grid grid-cols-3 grid-rows-3 w-full h-full">
         {grid.flat().map((v, i) => (
           <div key={i} className="flex items-center justify-center">
             {v ? dot : null}
@@ -124,96 +124,130 @@ export default function Dice({
     return () => bursts.forEach((t) => clearTimeout(t))
   }, [winnerId])
 
+  const progress = totalPlayers ? Math.min(100, (((currentRound - 1) * totalPlayers + index) / (rounds * totalPlayers)) * 100) : 0
+
   return (
-    <div className="barbie-card p-4">
-      <h2 className="text-lg font-semibold mb-3">Dice</h2>
-      <div className="flex items-center justify-between mb-3">
-        <div className="text-sm">
+    <div className="card p-5 sm:p-7">
+      {/* Turn and round status */}
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <p className="label">Now rolling</p>
           {currentPlayer ? (
-            <span>Turn: <span className="font-semibold text-hotPink dark:text-neonPink">{currentPlayer.name}</span></span>
+            <p className="text-2xl font-extrabold text-hotPink dark:text-neonPink mt-1">
+              {currentPlayer.emoji ? <span className="mr-1">{currentPlayer.emoji}</span> : null}
+              {currentPlayer.name}
+            </p>
           ) : (
-            <span className="opacity-80">Add players to start</span>
+            <p className="text-lg font-bold text-inkSoft dark:text-rose/60 mt-1">Add players to start</p>
           )}
         </div>
-        <div className="text-sm">
-          <span>Round {currentRound}/{rounds} · Player {Math.min(index + 1, totalPlayers)}/{totalPlayers}</span>
+        <div className="text-right">
+          <p className="label">Round</p>
+          <p className="text-2xl font-extrabold tabular-nums mt-1">
+            {currentRound}<span className="text-base text-inkSoft dark:text-rose/50"> / {rounds}</span>
+          </p>
+          <p className="text-xs text-inkSoft dark:text-rose/50 tabular-nums">
+            Player {Math.min(index + 1, totalPlayers)} of {totalPlayers}
+          </p>
         </div>
       </div>
-      <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-4">
-        <label className="opacity-80">Rounds</label>
-        <div className="flex flex-wrap items-center gap-2">
-          {[1,3,5,7].map((n) => (
-            <button
-              key={n}
-              className={`tab-button ${rounds === n ? 'ring-2 ring-hotPink' : ''}`}
-              onClick={() => onSetRounds && onSetRounds(n)}
-              disabled={rolling}
-            >
-              {n}
-            </button>
-          ))}
-          <input
-            type="number"
-            min="1"
-            max="20"
-            value={rounds}
-            onChange={(e) => onSetRounds && onSetRounds(e.target.value)}
-            className="w-24 sm:w-20 shrink-0 rounded-xl px-3 py-2 bg-babyPink/60 dark:bg-barbieBlack/40 focus:outline-none"
-          />
-          <button className="tab-button" onClick={onResetGame} disabled={rolling}>Reset</button>
-        </div>
+      <div className="mt-4 h-1.5 rounded-full bg-rose dark:bg-nightLine overflow-hidden" aria-hidden="true">
+        <div
+          className="h-full w-full rounded-full origin-left transition-transform duration-500 ease-smooth"
+          style={{ backgroundImage: 'var(--barbie-gradient)', transform: `scaleX(${progress / 100})` }}
+        />
       </div>
-      <div className="flex items-center gap-2 mb-4">
-        <label className="opacity-80">Dice count</label>
-        <div className="flex gap-2">
-          {[1,2,3].map((n) => (
-            <button
-              key={n}
-              className={`tab-button ${count === n ? 'ring-2 ring-hotPink' : ''}`}
-              onClick={() => setCount(n)}
-              disabled={rollDisabled}
-            >
-              {n}
-            </button>
+
+      {/* Dice stage */}
+      <div className="panel mt-6 py-10 px-4 flex flex-col items-center gap-6">
+        <div className="flex items-center justify-center gap-4 sm:gap-6">
+          {Array.from({ length: count }).map((_, i) => (
+            <DiceFace key={i} value={values[i] || 1} animate={rolling} />
           ))}
         </div>
-      </div>
-      <div className="flex items-center gap-4 mb-4">
-        {Array.from({ length: count }).map((_, i) => (
-          <DiceFace key={i} value={values[i] || 1} animate={rolling} />
-        ))}
-      </div>
-      <div className="flex items-center justify-between">
-        <div className="text-sm opacity-80">
-          {values.length ? `Values: ${values.join(', ')}` : 'Roll to see values'}
-        </div>
-        <div className="text-lg font-semibold">
-          Total: <span className="text-hotPink dark:text-neonPink">{total}</span>
+        <div className="text-center">
+          <p className="label">Total</p>
+          <p className="text-5xl font-extrabold tabular-nums text-hotPink dark:text-neonPink leading-tight" aria-live="polite">{total}</p>
+          <p className="text-sm text-inkSoft dark:text-rose/60">
+            {values.length ? `Rolled ${values.join(' + ')}` : 'Roll to see your values'}
+          </p>
         </div>
       </div>
-      <div className="mt-4">
+
+      {/* Roll button */}
+      <div className="mt-6">
         {winnerId ? (
-          <div className="fixed inset-0 flex items-center justify-center bg-black/40 dark:bg-black/60 z-50">
-            <div className="rounded-2xl p-6 text-center bg-barbieWhite dark:bg-barbieBlack shadow-barbie animate-pop">
-              <div className="text-2xl md:text-3xl font-extrabold text-hotPink dark:text-neonPink mb-2">
-                👑 Winner: {winnerName || '—'}
-              </div>
-              <p className="text-sm opacity-80 mb-4">Congratulations!!!</p>
-              <div className="flex gap-2">
-                <button className="barbie-button flex-1" onClick={onResetGame}>Play Again</button>
-              </div>
+          <div className="dialog-backdrop fixed inset-0 flex items-center justify-center bg-ink/40 dark:bg-black/60 backdrop-blur-sm z-50 p-4">
+            <div className="dialog-panel card p-8 text-center w-full max-w-sm" role="dialog" aria-modal="true" aria-labelledby="winner-title">
+              <div className="text-5xl mb-3" aria-hidden="true">👑</div>
+              <p className="label">Winner</p>
+              <h2 id="winner-title" className="text-3xl font-extrabold text-hotPink dark:text-neonPink mt-1">
+                {winnerName || '—'}
+              </h2>
+              <p className="section-desc mt-2 mb-6">Congratulations! That was a great game.</p>
+              <button className="btn-primary btn-lg w-full" onClick={onResetGame}>Play again</button>
             </div>
           </div>
         ) : (
           <>
-          {!authorized && currentPlayer ? (
-            <div className="text-center text-sm opacity-80 mb-2">Only this device’s registered player can roll</div>
-          ) : null}
-          <button className="barbie-button w-full" onClick={roll} disabled={rollDisabled}>
-            {rolling ? 'Rolling…' : 'Roll Dice'}
-          </button>
+            {!authorized && currentPlayer ? (
+              <p className="text-center text-sm text-inkSoft dark:text-rose/60 mb-3">
+                Only the device that added {currentPlayer.name} can roll for them
+              </p>
+            ) : null}
+            <button className="btn-primary btn-lg w-full" onClick={roll} disabled={rollDisabled}>
+              {rolling ? 'Rolling…' : '🎲 Roll dice'}
+            </button>
           </>
         )}
+      </div>
+
+      {/* Game settings */}
+      <div className="mt-6 pt-6 border-t border-babyPink/60 dark:border-nightLine grid gap-5 sm:grid-cols-2">
+        <div className="flex flex-col gap-2">
+          <span className="label">Dice</span>
+          <div className="segmented self-start" role="group" aria-label="Number of dice">
+            {[1,2,3].map((n) => (
+              <button
+                key={n}
+                className="segment"
+                aria-pressed={count === n}
+                onClick={() => setCount(n)}
+                disabled={rollDisabled}
+              >
+                {n}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="flex flex-col gap-2">
+          <span className="label">Rounds</span>
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="segmented" role="group" aria-label="Number of rounds">
+              {[1,3,5,7].map((n) => (
+                <button
+                  key={n}
+                  className="segment"
+                  aria-pressed={rounds === n}
+                  onClick={() => onSetRounds && onSetRounds(n)}
+                  disabled={rolling}
+                >
+                  {n}
+                </button>
+              ))}
+            </div>
+            <input
+              type="number"
+              min="1"
+              max="20"
+              value={rounds}
+              aria-label="Custom number of rounds"
+              onChange={(e) => onSetRounds && onSetRounds(e.target.value)}
+              className="field !w-20 text-center"
+            />
+            <button className="btn-ghost" onClick={onResetGame} disabled={rolling}>Reset</button>
+          </div>
+        </div>
       </div>
     </div>
   )
